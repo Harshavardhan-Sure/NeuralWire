@@ -1,0 +1,21 @@
+{
+  "name": "ai-news-aggregator",
+  "version": "1.0.0",
+  "description": "A local AI news aggregator built with Node.js, Express, and vanilla JavaScript.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "keywords": [
+    "news",
+    "rss",
+    "express",
+    "vanilla-js"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "rss-parser": "^3.13.0"
+  }
+}

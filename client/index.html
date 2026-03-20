@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuralWire | AI News Aggregator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="top-ribbon">
+      <div class="top-ribbon__inner">
+        <span>AI news aggregator</span>
+        <span id="feedStatus">Loading feeds...</span>
+      </div>
+    </header>
+
+    <div class="page-shell">
+      <header class="hero-header">
+        <div class="hero-branding">
+          <p class="eyebrow">Latest from the feed</p>
+          <div class="masthead-row">
+            <h1>NeuralWire</h1>
+            <span class="masthead-tag">AI</span>
+          </div>
+          <p class="hero-copy">
+            Curated live coverage from leading AI labs, research blogs, and industry publications, bringing the
+            biggest model launches, product updates, research breakthroughs, and ecosystem shifts into one fast
+            front page.
+          </p>
+        </div>
+
+        <div class="hero-tools">
+          <div class="hero-actions hero-actions--icons">
+            <button id="searchToggleBtn" class="theme-toggle icon-button icon-button--hero secondary-action" type="button" aria-label="Search stories" title="Search stories"></button>
+            <button id="refreshFeedsBtn" class="theme-toggle icon-button icon-button--hero secondary-action" type="button" aria-label="Refresh feeds" title="Refresh feeds"></button>
+            <button id="savedBtn" class="theme-toggle icon-button icon-button--hero secondary-action" type="button" aria-label="Saved stories" title="Saved stories"></button>
+            <button id="diagnosticsBtn" class="theme-toggle icon-button icon-button--hero secondary-action" type="button" aria-label="Feed details" title="Feed details"></button>
+            <button id="settingsBtn" class="theme-toggle icon-button icon-button--hero secondary-action" type="button" aria-label="Settings" title="Settings"></button>
+            <button id="themeToggle" class="theme-toggle icon-button icon-button--hero" type="button" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
+          <label id="searchPanel" class="search-bar hidden" for="searchInput">
+            <span>Search headlines and summaries</span>
+            <input id="searchInput" type="search" placeholder="GPT-5, agents, robotics, multimodal, open source..." />
+          </label>
+        </div>
+      </header>
+
+      <section id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-grid">
+          <label>
+            <span>Sort stories</span>
+            <select id="sortSelect">
+              <option value="newest">Newest</option>
+              <option value="source">Source A-Z</option>
+              <option value="duplicated">Most duplicated</option>
+            </select>
+          </label>
+          <label>
+            <span>Cards per batch</span>
+            <select id="cardsPerBatchSelect">
+              <option value="12">12</option>
+              <option value="18">18</option>
+              <option value="24">24</option>
+              <option value="30">30</option>
+            </select>
+          </label>
+          <label class="setting-toggle">
+            <input id="stickySidebarToggle" type="checkbox" />
+            <span>Sticky sidebar</span>
+          </label>
+          <label class="setting-toggle">
+            <input id="showFeaturedToggle" type="checkbox" />
+            <span>Show featured</span>
+          </label>
+        </div>
+      </section>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <section class="sidebar-panel">
+            <div class="section-head section-head--stacked">
+              <h2>Sources</h2>
+              <button id="clearFilterBtn" class="text-button icon-button" type="button" aria-label="Reset filters" title="Reset filters"></button>
+            </div>
+            <div class="mobile-filter-bar">
+              <label class="mobile-filter-select" for="sourceSelect">
+                <span>Filter by source</span>
+                <select id="sourceSelect" aria-label="Filter stories by source"></select>
+              </label>
+            </div>
+            <div id="sourceFilters" class="filter-list"></div>
+          </section>
+        </aside>
+
+        <section class="content">
+          <section id="featuredSection" class="featured-section">
+            <div class="content-head content-head--actions">
+              <div>
+                <p class="eyebrow">Featured</p>
+                <h2>Top latest</h2>
+              </div>
+              <div class="inline-actions">
+                <button id="openFeaturedBtn" class="text-button icon-button" type="button" aria-label="Open all featured stories" title="Open all featured stories"></button>
+              </div>
+            </div>
+            <div id="featuredGrid" class="featured-grid"></div>
+          </section>
+
+          <section class="trending-section">
+            <div class="content-head">
+              <div>
+                <p class="eyebrow">Trends</p>
+                <h2>Trending topics</h2>
+              </div>
+            </div>
+            <div id="trendingTopics" class="trending-topics"></div>
+          </section>
+
+          <section class="feed-section">
+            <div class="content-head content-head--actions">
+              <div>
+                <p class="eyebrow">Front page</p>
+                <h2 id="resultsTitle">Top stories</h2>
+              </div>
+              <div class="inline-actions">
+                <button id="scrollTopBtn" class="text-button icon-button" type="button" aria-label="Back to top" title="Back to top"></button>
+              </div>
+            </div>
+
+            <div id="loadingState" class="state-card">Fetching the latest articles...</div>
+            <div id="skeletonGrid" class="news-grid skeleton-grid hidden"></div>
+            <div id="emptyState" class="state-card hidden">No articles match your search or source filter.</div>
+            <div id="newsGrid" class="news-grid"></div>
+            <div id="scrollSentinel" class="scroll-sentinel" aria-hidden="true"></div>
+            <div id="endState" class="end-state hidden">All done. You’ve reached the end of the feed.</div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Built locally with Node.js, Express, RSS Parser, and vanilla JavaScript for tracking the AI ecosystem.</p>
+      </footer>
+    </div>
+
+    <button id="backToTopBtn" class="back-to-top hidden icon-button" type="button" aria-label="Back to top" title="Back to top"></button>
+
+    <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <button id="modalCloseBtn" class="modal-close icon-button" type="button" aria-label="Close" title="Close"></button>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+
+    <template id="articleCardTemplate">
+      <article class="news-card">
+        <div class="news-card__image-wrap">
+          <img class="news-card__image" alt="" loading="lazy" />
+          <div class="news-card__placeholder hidden"></div>
+          <div class="news-card__source-badge"></div>
+        </div>
+        <div class="news-card__body">
+          <p class="news-card__meta"></p>
+          <h3 class="news-card__title"></h3>
+          <p class="news-card__description"></p>
+          <div class="card-actions">
+            <button class="text-button icon-button card-preview-btn" type="button" aria-label="Preview story" title="Preview story"></button>
+            <button class="text-button icon-button card-save-btn" type="button" aria-label="Save story" title="Save story"></button>
+            <a class="news-card__link" target="_blank" rel="noopener noreferrer">Read story</a>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="featuredCardTemplate">
+      <article class="featured-card">
+        <div class="featured-card__media">
+          <img class="featured-card__image" alt="" loading="lazy" />
+          <div class="featured-card__placeholder hidden"></div>
+          <div class="featured-card__badge"></div>
+        </div>
+        <div class="featured-card__body">
+          <p class="featured-card__meta"></p>
+          <h3 class="featured-card__title"></h3>
+          <p class="featured-card__description"></p>
+          <div class="card-actions">
+            <button class="text-button icon-button featured-preview-btn" type="button" aria-label="Preview story" title="Preview story"></button>
+            <button class="text-button icon-button featured-save-btn" type="button" aria-label="Save story" title="Save story"></button>
+            <a class="news-card__link" target="_blank" rel="noopener noreferrer">Read story</a>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
