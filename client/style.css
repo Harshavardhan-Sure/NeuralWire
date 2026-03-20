@@ -74,7 +74,7 @@ mark { background: var(--accent); color: #111111; padding: 0 0.12em; }
 }
 .hero-branding { color: #fff8e7; min-width: 0; }
 .hero-branding .eyebrow,
-.hero-copy { color: rgba(255, 248, 231, 0.86); }
+.hero-copy { color: rgba(255, 248, 231, 0.92); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.22); }
 .eyebrow { margin: 0 0 10px; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.16em; }
 .masthead-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 h1, h2, h3, .news-card__title, .featured-card__title {
