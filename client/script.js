@@ -1,9 +1,13 @@
 const SOURCE_META = {
   "TechCrunch AI": { favicon: "https://techcrunch.com/favicon.ico" },
   "AI News": { favicon: "https://www.artificialintelligence-news.com/favicon.ico" },
+  "VentureBeat AI": { favicon: "https://venturebeat.com/favicon.ico" },
   "Google AI Blog": { favicon: "https://blog.google/favicon.ico" },
   "Towards AI": { favicon: "https://towardsai.net/favicon.ico" },
   "Hugging Face": { favicon: "https://huggingface.co/favicon.ico" },
+  "OpenAI Blog": { favicon: "https://openai.com/favicon.ico" },
+  "DeepMind Blog": { favicon: "https://deepmind.google/favicon.ico" },
+  "Meta AI Blog": { favicon: "https://ai.meta.com/favicon.ico" },
   "KDnuggets": { favicon: "https://www.kdnuggets.com/favicon.ico" },
   "Machine Learning Mastery": { favicon: "https://machinelearningmastery.com/favicon.ico" },
   "The Decoder": { favicon: "https://the-decoder.com/favicon.ico" },
@@ -12,6 +16,10 @@ const SOURCE_META = {
   "MIT News AI": { favicon: "https://news.mit.edu/favicon.ico" },
   "AI Business": { favicon: "https://aibusiness.com/favicon.ico" },
   "AWS ML Blog": { favicon: "https://aws.amazon.com/favicon.ico" },
+  "The Rundown AI": { favicon: "https://www.therundown.ai/favicon.ico" },
+  "Superhuman AI": { favicon: "https://www.superhuman.ai/favicon.ico" },
+  "Ben's Bites": { favicon: "https://www.bensbites.co/favicon.ico" },
+  "ZDNET AI": { favicon: "https://www.zdnet.com/favicon.ico" },
   "WIRED AI": { favicon: "https://www.wired.com/favicon.ico" },
   "The Verge AI": { favicon: "https://www.theverge.com/favicon.ico" }
 };
@@ -19,9 +27,13 @@ const SOURCE_META = {
 const SOURCE_PALETTE = {
   "TechCrunch AI": ["#8bffc9", "#149e5a"],
   "AI News": ["#d5f0ff", "#3b82f6"],
+  "VentureBeat AI": ["#ffd7ce", "#ff6b57"],
   "Google AI Blog": ["#ffe6b8", "#f9ab00"],
   "Towards AI": ["#d5f6ff", "#00a3c8"],
   "Hugging Face": ["#ffe497", "#ffaf1c"],
+  "OpenAI Blog": ["#9ef7d5", "#16a085"],
+  "DeepMind Blog": ["#bfd2ff", "#4a6fff"],
+  "Meta AI Blog": ["#d7dcff", "#4760ff"],
   "KDnuggets": ["#e0d6ff", "#6f54ff"],
   "Machine Learning Mastery": ["#c8ebff", "#1d7ed6"],
   "The Decoder": ["#c4f6ff", "#3795d8"],
@@ -30,6 +42,10 @@ const SOURCE_PALETTE = {
   "MIT News AI": ["#ffc9c9", "#a11a2b"],
   "AI Business": ["#d4d1ff", "#5b4dff"],
   "AWS ML Blog": ["#ffe0a8", "#ff9900"],
+  "The Rundown AI": ["#d7ffee", "#1f9d72"],
+  "Superhuman AI": ["#ffe4c7", "#ff8f3d"],
+  "Ben's Bites": ["#fff0b3", "#e2a400"],
+  "ZDNET AI": ["#d1f0ff", "#1591d6"],
   "WIRED AI": ["#d4ddff", "#6a7cff"],
   "The Verge AI": ["#ffd7c6", "#ff5e3a"]
 };

@@ -22,11 +22,12 @@ const IMAGE_FALLBACK_LIMIT = 8;
 const IMAGE_FALLBACK_CONCURRENCY = 2;
 const FEATURED_LIMIT = 4;
 const SOURCE_TIMEOUT_MS = 7000;
-const MAX_ITEMS_PER_SOURCE = 12;
+const MAX_ITEMS_PER_SOURCE = 18;
 
 const RSS_SOURCES = [
   { name: "TechCrunch AI", url: "https://techcrunch.com/category/artificial-intelligence/feed/" },
   { name: "AI News", url: "https://www.artificialintelligence-news.com/feed/" },
+  { name: "VentureBeat AI", url: "https://venturebeat.com/category/ai/feed/", fallbackUrl: "https://venturebeat.com/category/ai/" },
   { name: "MIT News AI", url: "https://news.mit.edu/rss/topic/artificial-intelligence2", fallbackUrl: "https://news.mit.edu/topic/artificial-intelligence2" },
   { name: "Analytics Vidhya", url: "https://www.analyticsvidhya.com/feed/" },
   { name: "WIRED AI", url: "https://www.wired.com/feed/tag/ai/latest/rss" },
@@ -34,12 +35,19 @@ const RSS_SOURCES = [
   { name: "Google AI Blog", url: "https://blog.google/technology/ai/rss/" },
   { name: "Towards AI", url: "https://towardsai.net/feed" },
   { name: "Hugging Face", url: "https://huggingface.co/blog/feed.xml", fallbackUrl: "https://huggingface.co/blog" },
+  { name: "OpenAI Blog", url: "https://openai.com/blog/rss.xml", fallbackUrl: "https://openai.com/blog" },
+  { name: "DeepMind Blog", url: "https://deepmind.google/discover/blog/rss.xml", fallbackUrl: "https://deepmind.google/discover/blog/" },
+  { name: "Meta AI Blog", url: "https://ai.meta.com/blog/rss/", fallbackUrl: "https://ai.meta.com/blog/" },
   { name: "KDnuggets", url: "https://feeds.feedburner.com/kdnuggets-data-mining-analytics" },
   { name: "Machine Learning Mastery", url: "https://machinelearningmastery.com/blog/feed/" },
   { name: "The Decoder", url: "https://the-decoder.com/feed/" },
   { name: "MarkTechPost", url: "https://www.marktechpost.com/feed/" },
   { name: "AI Business", url: "https://aibusiness.com/rss.xml", fallbackUrl: "https://aibusiness.com/" },
-  { name: "AWS ML Blog", url: "https://aws.amazon.com/blogs/machine-learning/feed/" }
+  { name: "AWS ML Blog", url: "https://aws.amazon.com/blogs/machine-learning/feed/" },
+  { name: "The Rundown AI", url: "https://www.therundown.ai/rss.xml", fallbackUrl: "https://www.therundown.ai/" },
+  { name: "Superhuman AI", url: "https://www.superhuman.ai/rss.xml", fallbackUrl: "https://www.superhuman.ai/" },
+  { name: "Ben's Bites", url: "https://www.bensbites.co/rss.xml", fallbackUrl: "https://www.bensbites.co/" },
+  { name: "ZDNET AI", url: "https://www.zdnet.com/topic/artificial-intelligence/rss.xml", fallbackUrl: "https://www.zdnet.com/topic/artificial-intelligence/" }
 ];
 
 const cache = {
@@ -294,29 +302,34 @@ function normalizeArticle(item, sourceName) {
 }
 
 async function fetchSource(source) {
+  let feedError = null;
+
   try {
-    const feed = await parser.parseURL(source.url);
+    const feed = await withTimeout(parser.parseURL(source.url), SOURCE_TIMEOUT_MS, source.name);
     const items = Array.isArray(feed.items) ? feed.items.slice(0, MAX_ITEMS_PER_SOURCE) : [];
 
     return items
       .map((item) => normalizeArticle(item, source.name))
       .filter((article) => article.title && article.link);
   } catch (error) {
-    if (!source.fallbackUrl) {
-      throw error;
-    }
-
-    const html = await fetchHtml(source.fallbackUrl);
-    const fallbackItems = parseJsonLdArticles(html, source)
-      .map((item) => normalizeFallbackArticle(item, source.name))
-      .filter((article) => article.title && article.link);
-
-    if (fallbackItems.length === 0) {
-      throw error;
-    }
-
-    return fallbackItems;
+    feedError = error;
   }
+
+  if (!source.fallbackUrl) {
+    throw feedError;
+  }
+
+  const html = await fetchHtml(source.fallbackUrl);
+  const fallbackItems = parseJsonLdArticles(html, source)
+    .slice(0, MAX_ITEMS_PER_SOURCE)
+    .map((item) => normalizeFallbackArticle(item, source.name))
+    .filter((article) => article.title && article.link);
+
+  if (fallbackItems.length === 0) {
+    throw feedError || new Error(`${source.name} returned no fallback articles`);
+  }
+
+  return fallbackItems;
 }
 
 function withTimeout(promise, timeoutMs, label) {
@@ -393,9 +406,7 @@ async function getAllArticles(forceRefresh = false) {
 
   inflightFetch = (async () => {
     try {
-      const results = await Promise.allSettled(
-        RSS_SOURCES.map((source) => withTimeout(fetchSource(source), SOURCE_TIMEOUT_MS, source.name))
-      );
+      const results = await Promise.allSettled(RSS_SOURCES.map(fetchSource));
       const rawArticles = results
         .filter((result) => result.status === "fulfilled")
         .flatMap((result) => result.value)
